@@ -32,3 +32,8 @@ class ProductFactory(factory.Factory):
 
     id = factory.Sequence(lambda n: n)
    ## Add code to create Fake Products 
+    name = factory.Faker('word')
+    description = factory.Faker('sentence')
+    price = factory.Faker('pydecimal', left_digits=3, right_digits=2, positive=True)
+    category = factory.Faker('word')
+    is_active = factory.Faker('boolean')
