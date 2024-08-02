@@ -167,6 +167,40 @@ class TestProductRoutes(TestCase):
     # ADD YOUR TEST CASES HERE
     #
 
+  def test_create_product_with_negative_price(self):
+    """It should not Create a Product with a negative price"""
+    test_product = ProductFactory()
+    test_product.price = -10.0
+    response = self.client.post(BASE_URL, json=test_product.serialize())
+    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+def test_create_product_with_invalid_category(self):
+    """It should not Create a Product with an invalid category"""
+    test_product = ProductFactory()
+    test_product.category = "INVALID_CATEGORY"
+    response = self.client.post(BASE_URL, json=test_product.serialize())
+    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+def test_create_product_with_missing_required_field(self):
+    """It should not Create a Product with a missing required field"""
+    test_product = ProductFactory()
+    required_fields = ["name", "price", "category"]
+    for field in required_fields:
+        product_data = test_product.serialize()
+        del product_data[field]
+        response = self.client.post(BASE_URL, json=product_data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+def test_create_duplicate_product(self):
+    """It should not Create a duplicate Product"""
+    test_product = ProductFactory()
+    response = self.client.post(BASE_URL, json=test_product.serialize())
+    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    # Try to create the same product again
+    response = self.client.post(BASE_URL, json=test_product.serialize())
+    self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
     ######################################################################
     # Utility functions
     ######################################################################
