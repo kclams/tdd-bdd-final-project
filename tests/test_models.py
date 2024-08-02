@@ -104,3 +104,69 @@ class TestProductModel(unittest.TestCase):
     #
     # ADD YOUR TEST CASES HERE
     #
+
+def test_update_a_product(self):
+    """It should update an existing product"""
+    product = ProductFactory()
+    product.id = None
+    product.create()
+    self.assertIsNotNone(product.id)
+
+    # Update the product
+    product.name = "Updated Fedora"
+    product.description = "A new and improved red hat"
+    product.price = 15.99
+    product.available = False
+    product.category = Category.ACCESSORIES
+    product.update()
+
+    # Retrieve the updated product and assert the changes
+    updated_product = Product.get(product.id)
+    self.assertEqual(updated_product.name, "Updated Fedora")
+    self.assertEqual(updated_product.description, "A new and improved red hat")
+    self.assertEqual(Decimal(updated_product.price), 15.99)
+    self.assertEqual(updated_product.available, False)
+    self.assertEqual(updated_product.category, Category.ACCESSORIES)
+
+def test_delete_a_product(self):
+    """It should delete an existing product"""
+    product = ProductFactory()
+    product.id = None
+    product.create()
+    self.assertIsNotNone(product.id)
+
+    # Delete the product
+    product.delete()
+
+    # Ensure the product is no longer in the database
+    products = Product.all()
+    self.assertEqual(len(products), 0)
+
+def test_list_all_products(self):
+    """It should list all products in the database"""
+    # Create some products
+    ProductFactory.create_batch(5)
+
+    # Retrieve all products
+    products = Product.all()
+    self.assertEqual(len(products), 5)
+
+    # Ensure the products match the created ones
+    for i, product in enumerate(products):
+        self.assertEqual(product.id, i)
+
+def test_get_product_by_id(self):
+    """It should retrieve a product by its id"""
+    product = ProductFactory()
+    product.id = None
+    product.create()
+    self.assertIsNotNone(product.id)
+
+    # Retrieve the product by its id
+    retrieved_product = Product.get(product.id)
+    self.assertEqual(retrieved_product.id, product.id)
+    self.assertEqual(retrieved_product.name, product.name)
+    self.assertEqual(retrieved_product.description, product.description)
+    self.assertEqual(Decimal(retrieved_product.price), product.price)
+    self.assertEqual(retrieved_product.available, product.available)
+    self.assertEqual(retrieved_product.category, product.category)
