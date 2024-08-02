@@ -97,32 +97,72 @@ def create_products():
 ######################################################################
 # L I S T   A L L   P R O D U C T S
 ######################################################################
+@app.route("/products", methods=["GET"])
+def list_products():
+    """
+    Lists all the Products
+    """
+    app.logger.info("Request to list Products...")
+    products = Product.all()
+    results = [product.serialize() for product in products]
+    app.logger.info("Returning %d products", len(results))
+    return jsonify(results), status.HTTP_200_OK
 
-#
-# PLACE YOUR CODE TO LIST ALL PRODUCTS HERE
-#
 
 ######################################################################
 # R E A D   A   P R O D U C T
 ######################################################################
+@app.route("/products/<int:product_id>", methods=["GET"])
+def get_products(product_id):
+    """
+    Read a single Product
+    This endpoint will return a Product based on its id
+    """
+    app.logger.info("Request to read a Product with id: %s", product_id)
+    product = Product.find(product_id)
+    if not product:
+        app.logger.info("Product with id [%s] not found", product_id)
+        return jsonify({"message": "Product not found"}), status.HTTP_404_NOT_FOUND
+    return jsonify(product.serialize()), status.HTTP_200_OK
 
-#
-# PLACE YOUR CODE HERE TO READ A PRODUCT
-#
 
 ######################################################################
 # U P D A T E   A   P R O D U C T
 ######################################################################
+@app.route("/products/<int:product_id>", methods=["PUT"])
+def update_products(product_id):
+    """
+    Update a Product
+    This endpoint will update a Product based on the data in the request body
+    """
+    app.logger.info("Request to update Product with id: %s", product_id)
+    check_content_type("application/json")
 
-#
-# PLACE YOUR CODE TO UPDATE A PRODUCT HERE
-#
+    product = Product.find(product_id)
+    if not product:
+        app.logger.info("Product with id [%s] not found", product_id)
+        return jsonify({"message": "Product not found"}), status.HTTP_404_NOT_FOUND
+
+    data = request.get_json()
+    product.deserialize(data)
+    product.update()
+
+    return jsonify(product.serialize()), status.HTTP_200_OK
+
 
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
+@app.route("/products/<int:product_id>", methods=["DELETE"])
+def delete_products(product_id):
+    """
+    Delete a Product
+    This endpoint will delete a Product based on the id specified in the path
+    """
+    app.logger.info("Request to delete Product with id: %s", product_id)
 
+    product = Product.find(product_id)
+    if product:
+        product.delete()
 
-#
-# PLACE YOUR CODE TO DELETE A PRODUCT HERE
-#
+    return "", status.HTTP_204_NO_CONTENT
